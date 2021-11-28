@@ -14,16 +14,17 @@ const CountFC = () => {
     console.log('Component did mount.');
   }, []);
 
-  const increaseCount = useCallback(() => {
-    console.log('+')
+  const increaseCount = useCallback((para) => {
+    console.log(para)
     setLocalCount(localCount + 1);
-    dispatch(actions.increaseCount());
+    dispatch(actions.increaseCount(para));
   }, [localCount, dispatch]);
 
-  const decreaseCount = useCallback(() => {
-    console.log('-')
+  const decreaseCount = useCallback((para) => {
+    console.log(para)
+
     setLocalCount(localCount - 1);
-    dispatch(actions.decreaseCount());
+    dispatch(actions.decreaseCount(para));
   }, [localCount, dispatch]);
 
   return (
@@ -36,9 +37,9 @@ const CountFC = () => {
           <Text>{`storeCount: ${storeCount}`}</Text>
         </View>
       </View>
-      <Button onPress={()=>increaseCount()} title='+'>
+      <Button onPress={()=>increaseCount('para')} title='+'>
       </Button>
-      <Button onPress={()=>decreaseCount()} title='-'>
+      <Button onPress={()=>decreaseCount('para')} title='-'>
       </Button>
     </View>
   )

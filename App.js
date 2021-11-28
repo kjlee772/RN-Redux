@@ -1,29 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Provider } from 'react-redux';
+import home_screen from './screen/home_screen';
+import ocr_screen from './screen/ocr_screen';
+import storage_screen from './screen/storage_screen';
 
-// import CountComponent from './components/Count';
-import CountFCComponent from './components/CountFC';
-
-import createStore from './store';
-import reducers from './reducers';
-
-const store = createStore(reducers);
+const Stack = createNativeStackNavigator();
 
 const App = () => {
+
   return (
-    <Provider store={store}>
-      <View>
-        {/* <CountComponent /> */}
-        <CountFCComponent />
-      </View>
-    </Provider>
-  );
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={home_screen} />
+        <Stack.Screen name="Ocr" component={ocr_screen} />
+        <Stack.Screen name="Storage" component={storage_screen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 };
-
-const styles = StyleSheet.create({
-
-});
 
 export default App;

@@ -4,15 +4,17 @@ export const DECREASE_COUNT = 'count/DECREASE_COUNT';
 export const SET_COUNT = 'count/SET_COUNT';
 
 // Action creators
-export const increaseCount = () => {
+export const increaseCount = (para) => {
   return {
     type: INCREASE_COUNT,
+    payload: para,
   }
 };
 
-export const decreaseCount = () => {
+export const decreaseCount = (para) => {
   return {
     type: DECREASE_COUNT,
+    payload: para,
   }
 };
 

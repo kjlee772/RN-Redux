@@ -11,6 +11,10 @@ import Loading from './loading';
 import * as actions from '../actions/fileData';
 
 const home_screen = ({ navigation }) => {
+  // const dispatch = useDispatch();
+
+  const { temp: whatsthis } = useSelector((state) => state.file_uri);
+
   const [from, set_from] = useState('home');
   const [file_uri, set_file_uri] = useState();
   const [file_base64, set_file_base64] = useState();
@@ -61,7 +65,8 @@ const home_screen = ({ navigation }) => {
         console.log('ImagePicker Error: ', response.errorCode, response.errorMessage);
       }
       else {
-        set_file_uri(response['assets'][0].uri);
+        // set_file_uri(response['assets'][0].uri);
+        dispatch(actions(response['assets'][0].uri));
         set_file_base64(response['assets'][0].base64);
         set_file_name(response['assets'][0].fileName);
       }

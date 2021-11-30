@@ -1,8 +1,9 @@
 import * as countActions from '../actions/count';
 
 const initialStates = {
-  count: 0,
-  
+  count: 100,
+  temp: 12,
+  tlqkf: 21,
 }
 
 const reducers = (state = initialStates, action) => {

@@ -10,15 +10,21 @@ import * as actions from '../actions/fileData';
 const ocr_screen = (props) => {
   const dispatch = useDispatch();
 
-  const [file_uri, set_file_uri] = useState(props.route.params.file_uri);
-  const [file_name, set_file_name] = useState(props.route.params.file_name);
-  const [ocr_result, set_ocr_result] = useState(props.route.params.ocr_result);
-  const [subject, set_subject] = useState(props.route.params.subject);
-  const [summary, set_summary] = useState(props.route.params.summary);
+  const from = props.route.params.from;
+
+  const { file_uri: store_file_uri } = useSelector((state) => state.fileData);
+  const { file_name: store_file_name } = useSelector((state) => state.fileData);
+  const { ocr_result: store_ocr_result } = useSelector((state) => state.fileData);
+  const { subject: store_subject } = useSelector((state) => state.fileData);
+  const { summary: store_summary } = useSelector((state) => state.fileData);
+
+  const [ocr_result, set_ocr_result] = useState(store_ocr_result);
+  const [subject, set_subject] = useState(store_subject);
+  const [summary, set_summary] = useState(store_summary);
 
   const data_object = {
-    file_uri: file_uri,
-    file_name: file_name,
+    file_uri: store_file_uri,
+    file_name: store_file_name,
     ocr_result: ocr_result,
     subject: subject,
     summary: summary,
@@ -49,13 +55,13 @@ const ocr_screen = (props) => {
     <View style={{ flex: 1, backgroundColor: '#DCF5FA' }}>
       <ScrollView>
         <View style={{ flex: 1, backgroundColor: 'black', alignItems: 'center', marginBottom: 5, justifyContent: 'center' }}>
-          <Image style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height / 4, resizeMode: 'contain' }} source={{ uri: file_uri }} />
+          <Image style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height / 4, resizeMode: 'contain' }} source={{ uri: store_file_uri }} />
         </View>
         <View style={{ flex: 3, alignItems: 'center', justifyContent: 'center' }}>
           <View style={{ width: '80%' }}>
             <TextInput style={{ backgroundColor: 'pink', color: 'black', marginBottom: 5, textAlign: 'center', fontSize: 22, fontWeight: 'bold', borderRadius: 5 }}
               placeholder={'주제를 입력해주세요.'}
-              value={subject}
+              value={from === 'home' ? null : subject}
               placeholderTextColor={'black'}
               onChangeText={set_subject}
             />
@@ -69,7 +75,7 @@ const ocr_screen = (props) => {
           </View>
           <View style={{ width: '99%' }}>
             <TextInput style={{ backgroundColor: 'white', color: 'black', borderWidth: 1, borderRadius: 5 }}
-              value={summary}
+              value={from === 'home' ? null : summary}
               placeholderTextColor={'black'} multiline={true}
               onChangeText={set_summary}
             />
@@ -83,7 +89,7 @@ const ocr_screen = (props) => {
             ><Text style={styles.text_btn}>요약하기</Text></TouchableOpacity>
           } */}
           <TouchableOpacity style={styles.touch_btn}
-            onPress={() => _save(file_name, data_object)}
+            onPress={() => _save(store_file_name, data_object)}
           ><Text style={styles.text_btn}>저장하기</Text></TouchableOpacity>
         </View>
       </ScrollView>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions, Alert } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,9 @@ import * as actions from '../actions/fileData';
 
 const storage_screen = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const from = 'storage';
+
   const { list_data: store_list_data } = useSelector((state) => state.fileData);
 
   const _delete_alert = (key) => {
@@ -42,7 +45,12 @@ const storage_screen = ({ navigation }) => {
   }
 
   const _move = (value) => {
-    navigation.navigate('Ocr', { file_name: value.file_name, file_uri: value.file_uri, ocr_result: value.ocr_result, subject: value.subject, summary: value.summary })
+    dispatch(actions.chn_file_name(value.file_name))
+    dispatch(actions.chn_file_uri(value.file_uri));
+    dispatch(actions.chn_ocr_result(value.ocr_result));
+    dispatch(actions.chk_subject(value.subject));
+    dispatch(actions.chk_summary(value.summary));
+    navigation.navigate('Ocr', { from: from })
   }
 
   if (store_list_data) {

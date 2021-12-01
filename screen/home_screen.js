@@ -1,6 +1,5 @@
-import React, { useState, } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
-
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,18 +10,30 @@ import { useSelector, useDispatch, } from 'react-redux';
 import * as actions from '../actions/fileData';
 
 const home_screen = ({ navigation }) => {
+  useEffect(() => {
+    AsyncStorage.getAllKeys()
+      .then(
+        (key) => AsyncStorage.multiGet(key)
+          .then(
+            (values) => dispatch(actions.make_list(values.map(([key, value]) => [key, JSON.parse(value)])))
+          )
+          .catch(err => { throw err })
+      )
+      .catch(err => { throw err })
+  }, [])
+
   const dispatch = useDispatch();
 
-  const [from, set_from] = useState('home');
+  const from = 'home';
 
-  const [file_uri, set_file_uri] = useState();
+  // const [file_uri, set_file_uri] = useState();
   const [file_base64, set_file_base64] = useState();
-  const [file_name, set_file_name] = useState();
-  const [ocr_result, set_ocr_result] = useState('임시로 작성된 본문');
+  // const [file_name, set_file_name] = useState();
+  // const [ocr_result, set_ocr_result] = useState();
 
   const { file_uri: store_file_uri } = useSelector((state) => state.fileData);
-  const { file_name: store_file_name } = useSelector((state) => state.fileData);
-  const { ocr_result: store_ocr_result } = useSelector((state) => state.fileData);
+  // const { file_name: store_file_name } = useSelector((state) => state.fileData);
+  // const { ocr_result: store_ocr_result } = useSelector((state) => state.fileData);
 
   const [loading_flag, set_loading_flag] = useState(false);
 
@@ -40,9 +51,9 @@ const home_screen = ({ navigation }) => {
         console.log('ImagePicker Error: ', response.errorCode, response.errorMessage);
       }
       else {
-        set_file_uri(response['assets'][0].uri);
+        dispatch(actions.chn_file_uri(response['assets'][0].uri));
         set_file_base64(response['assets'][0].base64);
-        set_file_name(response['assets'][0].fileName);
+        dispatch(actions.chn_file_name(response['assets'][0].fileName));
       }
     });
   }
@@ -56,9 +67,9 @@ const home_screen = ({ navigation }) => {
         console.log('ImagePicker Error: ', response.errorCode, response.errorMessage);
       }
       else {
-        set_file_uri(response['assets'][0].uri);
+        dispatch(actions.chn_file_uri(response['assets'][0].uri));
         set_file_base64(response['assets'][0].base64);
-        set_file_name(response['assets'][0].fileName);
+        dispatch(actions.chn_file_name(response['assets'][0].fileName));
       }
     });
   }
@@ -66,13 +77,12 @@ const home_screen = ({ navigation }) => {
   const _edit_image = () => {
     console.log('edit image called');
     ImagePicker.openCropper({
-      path: file_uri,
-      width: 1024,
-      height: 1024,
+      path: store_file_uri,
+      width: Dimensions.get('window').width,
       includeBase64: true,
       freeStyleCropEnabled: true,
     }).then(image => {
-      set_file_uri(image.path);
+      dispatch(actions.chn_file_uri(image.path));
       set_file_base64(image.data);
     }).catch((err) => {
       console.log('!!! edit error', err);
@@ -96,10 +106,10 @@ const home_screen = ({ navigation }) => {
   }
 
   const _render_image = () => {
-    if (file_uri) {
+    if (store_file_uri) {
       return (
         <TouchableOpacity style={{ width: '100%', height: '100%' }} onPress={() => _edit_alert()} >
-          <Image source={{ uri: file_uri }} style={styles.images} />
+          <Image source={{ uri: store_file_uri }} style={styles.images} />
         </TouchableOpacity>
       );
     }
@@ -112,59 +122,53 @@ const home_screen = ({ navigation }) => {
     }
   }
 
-  const _move_screen_ocr = () => {
-    navigation.navigate('Ocr', { ocr_result: ocr_result })
-  }
-  const _move_screen_storage = () => {
-    navigation.navigate('Storage', { all_data: all_data, from: from })
-  }
   const _move = () => {
     navigation.navigate('Storage')
   }
 
   const _ocr = () => {
-    navigation.navigate('Ocr', { file_uri: file_uri, file_name: file_name, ocr_result: ocr_result })
-    // if (file_base64) {
-    //   console.log('ocr called');
-    //   set_loading_flag(true);
-    //   fetch('http://:3001/new_ocr', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-type': 'application/json',
-    //       'Accept': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       file_base64: file_base64,
-    //     })
-    //   })
-    //     .then(res => res.json())
-    //     .then(res => {
-    //       set_ocr_result(res.Res);
-    //       set_loading_flag(false);
-    //     })
-    //     .then(() => {
-    //       _move_screen_ocr();
-    //     })
-    //     .catch(err => {
-    //       console.log('Ocr problem: ' + err.message, err.code);
-    //       set_loading_flag(false);
-    //       return Alert.alert(
-    //         '다시 시도해주세요',
-    //         '',
-    //         [
-    //           {
-    //             text: '예'
-    //           }
-    //         ]
-    //       )
-    //     })
-    // }
-    // else {
-    //   return Alert.alert(
-    //     '사진을 선택해주세요', '',
-    //     [{ text: 'OK' }],
-    //   )
-    // }
+    // navigation.navigate('Ocr');
+    if (file_base64) {
+      console.log('ocr called');
+      set_loading_flag(true);
+      fetch('http://221.158.52.168:3001/new_ocr', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          file_base64: file_base64,
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          dispatch(actions.chn_ocr_result(res.Res));
+          set_loading_flag(false);
+        })
+        .then(() => {
+          navigation.navigate('Ocr', { from: from });
+        })
+        .catch(err => {
+          console.log('Ocr problem: ' + err.message, err.code);
+          set_loading_flag(false);
+          return Alert.alert(
+            '다시 시도해주세요',
+            '',
+            [
+              {
+                text: '예'
+              }
+            ]
+          )
+        })
+    }
+    else {
+      return Alert.alert(
+        '사진을 선택해주세요', '',
+        [{ text: 'OK' }],
+      )
+    }
   }
 
   return (

@@ -50,6 +50,7 @@ const storage_screen = ({ navigation }) => {
     dispatch(actions.chn_ocr_result(value.ocr_result));
     dispatch(actions.chk_subject(value.subject));
     dispatch(actions.chk_summary(value.summary));
+    console.log(value.summary);
     navigation.navigate('Ocr', { from: from })
   }
 
@@ -61,8 +62,8 @@ const storage_screen = ({ navigation }) => {
           onPress={() => _move(value)}
           key={key} style={{ marginBottom: 3, }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image style={{ width: Dimensions.get('window').width / 2, height: Dimensions.get('window').width / 2, }} source={{ uri: value.file_uri }} />
-            <Text style={{ fontSize: 22, color: 'black', fontWeight: 'bold', marginLeft: 3 }}>{value.subject}</Text>
+            <Image style={styles.list_image} resizeMode='contain' source={{ uri: value.file_uri }} />
+            <Text style={styles.list_name}>{value.subject}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -84,13 +85,21 @@ const storage_screen = ({ navigation }) => {
       );
     }
   }
-  else {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: 'black', fontSize: 30, fontWeight: 'bold' }}>저장된 데이터가 없습니다.</Text>
-      </View>
-    );
-  }
 }
+
+const styles = StyleSheet.create({
+  list_image: { 
+    width: Dimensions.get('window').width / 2, 
+    height: Dimensions.get('window').width / 2, 
+    backgroundColor: 'black'
+  },
+  list_name: { 
+    fontSize: 22, 
+    color: 'black', 
+    fontWeight: 'bold', 
+    marginLeft: 3 
+  },
+
+});
 
 export default storage_screen;

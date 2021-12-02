@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions, ImageBackground } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal';
 
 import Loading from './loading';
+import camera_img from '../camera.png';
+import gallery_img from '../gallery.png';
 
 import { useSelector, useDispatch, } from 'react-redux';
 import * as actions from '../actions/fileData';
@@ -25,13 +28,16 @@ const home_screen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const from = 'home';
+  const [menu_visible, set_menu_visible] = useState(true);
+  const [modal_visible, set_modal_visible] = useState(false);
 
   // const [file_uri, set_file_uri] = useState();
-  const [file_base64, set_file_base64] = useState();
+  // const [file_base64, set_file_base64] = useState();
   // const [file_name, set_file_name] = useState();
   // const [ocr_result, set_ocr_result] = useState();
 
   const { file_uri: store_file_uri } = useSelector((state) => state.fileData);
+  const { file_base64: store_file_base64 } = useSelector((state) => state.fileData);
   // const { file_name: store_file_name } = useSelector((state) => state.fileData);
   // const { ocr_result: store_ocr_result } = useSelector((state) => state.fileData);
 
@@ -52,8 +58,9 @@ const home_screen = ({ navigation }) => {
       }
       else {
         dispatch(actions.chn_file_uri(response['assets'][0].uri));
-        set_file_base64(response['assets'][0].base64);
+        dispatch(actions.chn_file_base64(response['assets'][0].base64));
         dispatch(actions.chn_file_name(response['assets'][0].fileName));
+        _close_modal();
       }
     });
   }
@@ -68,8 +75,9 @@ const home_screen = ({ navigation }) => {
       }
       else {
         dispatch(actions.chn_file_uri(response['assets'][0].uri));
-        set_file_base64(response['assets'][0].base64);
+        dispatch(actions.chn_file_base64(response['assets'][0].base64));
         dispatch(actions.chn_file_name(response['assets'][0].fileName));
+        _close_modal();
       }
     });
   }
@@ -83,7 +91,7 @@ const home_screen = ({ navigation }) => {
       freeStyleCropEnabled: true,
     }).then(image => {
       dispatch(actions.chn_file_uri(image.path));
-      set_file_base64(image.data);
+      dispatch(actions.chn_file_base64(image.data));
     }).catch((err) => {
       console.log('!!! edit error', err);
     });
@@ -106,69 +114,85 @@ const home_screen = ({ navigation }) => {
   }
 
   const _render_image = () => {
-    if (store_file_uri) {
+    if (store_file_base64) {
       return (
-        <TouchableOpacity style={{ width: '100%', height: '100%' }} onPress={() => _edit_alert()} >
+        <TouchableOpacity style={styles.render_image} onPress={() => _edit_alert()} >
           <Image source={{ uri: store_file_uri }} style={styles.images} />
         </TouchableOpacity>
       );
     }
     else {
       return (
-        <TouchableOpacity style={{ width: '100%', height: '100%', backgroundColor: 'black', justifyContent: 'center' }}>
-          <Text style={{ color: 'white', textAlign: 'center', fontSize: 30, fontWeight: 'bold' }}>사진을{'\n'}선택해주세요</Text>
+        <TouchableOpacity style={styles.render_image}>
+          <Text style={styles.render_image_text}>사진을{'\n'}선택해주세요</Text>
         </TouchableOpacity>
       );
     }
   }
 
-  const _move = () => {
-    navigation.navigate('Storage')
+  const _ocr = () => {
+    if (store_file_base64) {
+      navigation.navigate('Ocr', { from: from });
+    }
+    // if (store_file_base64) {
+    //   console.log('ocr called');
+    //   set_loading_flag(true);
+    //   fetch('http://221.158.52.168:3001/new_ocr', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-type': 'application/json',
+    //       'Accept': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       file_base64: store_file_base64,
+    //     })
+    //   })
+    //     .then(res => res.json())
+    //     .then(res => {
+    //       let processed_res = res.Res.replace(/\n/g, '');
+    //       let split_res = processed_res.split('.');
+    //       let del_space = []
+    //       split_res.forEach(element => {
+    //         let temp = element.replace(/^\s+|\s+$/g, '');
+    //         temp = temp.concat('.')
+    //         del_space.push(temp);
+    //       });
+    //       let final_res = del_space.join('\n');
+    //       dispatch(actions.chn_ocr_result(final_res));
+    //       set_loading_flag(false);
+    //     })
+    //     .then(() => {
+    //       navigation.navigate('Ocr', { from: from });
+    //     })
+    //     .catch(err => {
+    //       console.log('Ocr problem: ' + err.message, err.code);
+    //       set_loading_flag(false);
+    //       return Alert.alert(
+    //         '다시 시도해주세요',
+    //         '',
+    //         [
+    //           {
+    //             text: '예'
+    //           }
+    //         ]
+    //       )
+    //     })
+    // }
+    // else {
+    //   return Alert.alert(
+    //     '사진을 선택해주세요', '',
+    //     [{ text: 'OK' }],
+    //   )
+    // }
   }
 
-  const _ocr = () => {
-    // navigation.navigate('Ocr');
-    if (file_base64) {
-      console.log('ocr called');
-      set_loading_flag(true);
-      fetch('http://221.158.52.168:3001/new_ocr', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          file_base64: file_base64,
-        })
-      })
-        .then(res => res.json())
-        .then(res => {
-          dispatch(actions.chn_ocr_result(res.Res));
-          set_loading_flag(false);
-        })
-        .then(() => {
-          navigation.navigate('Ocr', { from: from });
-        })
-        .catch(err => {
-          console.log('Ocr problem: ' + err.message, err.code);
-          set_loading_flag(false);
-          return Alert.alert(
-            '다시 시도해주세요',
-            '',
-            [
-              {
-                text: '예'
-              }
-            ]
-          )
-        })
-    }
-    else {
-      return Alert.alert(
-        '사진을 선택해주세요', '',
-        [{ text: 'OK' }],
-      )
-    }
+  const _open_modal = () => {
+    set_menu_visible(false);
+    set_modal_visible(true);
+  }
+  const _close_modal = () => {
+    set_modal_visible(false);
+    set_menu_visible(true);
   }
 
   return (
@@ -177,23 +201,45 @@ const home_screen = ({ navigation }) => {
         {_render_image()}
       </View>
       <View style={styles.view_menu}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
-          <TouchableOpacity style={[styles.touch_btn, { marginRight: 10 }]}
-            onPress={() => _launch_camera()}
-          ><Text style={styles.text_btn}>사진 촬영하기</Text></TouchableOpacity>
-          <TouchableOpacity style={styles.touch_btn}
-            onPress={() => _choose_image()}
-          ><Text style={styles.text_btn}>사진 불러오기</Text></TouchableOpacity>
-        </View>
-        <TouchableOpacity style={[styles.touch_btn, { marginBottom: 10, width: 200 }]}
-          onPress={() => _ocr()}
-        ><Text style={styles.text_btn}>텍스트 추출하기</Text></TouchableOpacity>
-        <TouchableOpacity style={[styles.touch_btn, { width: 120 }]}
-          onPress={() => _move()}
-        ><Text style={styles.text_btn}>저장소</Text></TouchableOpacity>
+        {menu_visible
+          ?
+          <>
+            <TouchableOpacity style={styles.touch_btn} onPress={() => _open_modal()}>
+              <Text style={styles.text_btn}>사진 선택하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.touch_btn} onPress={() => _ocr()}>
+              <Text style={styles.text_btn}>텍스트 추출하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.touch_btn} onPress={() => navigation.navigate('Storage')}>
+              <Text style={styles.text_btn}>저장소</Text>
+            </TouchableOpacity>
+          </>
+          :
+          <></>
+        }
       </View>
-      {loading_flag ?
-        <Loading /> : <></>}
+      {loading_flag ? <Loading /> : <></>}
+      <Modal isVisible={modal_visible} backdropOpacity={0}
+        animationIn='pulse' animationOut='slideOutDown'
+        onBackButtonPress={() => _close_modal()} onBackdropPress={() => _close_modal()}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 3.71 }}></View>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity style={styles.touch_btn_dif} onPress={() => _launch_camera()}>
+              <View style={{ alignItems: 'center' }}>
+                <Image source={camera_img} resizeMode='contain' style={styles.dif_back} />
+                <Text style={{ color: 'black', fontSize: 27, marginTop: -20 }}>카메라</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.touch_btn_dif} onPress={() => _choose_image()}>
+              <View style={{ alignItems: 'center' }}>
+                <Image source={gallery_img} resizeMode='contain' style={styles.dif_back} />
+                <Text style={{ color: 'black', fontSize: 27, marginTop: -20 }}>갤러리</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 };
@@ -203,6 +249,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  render_image: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+    justifyContent: 'center'
+  },
+  render_image_text: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 30,
+    fontWeight: 'bold'
   },
   view_image: {
     flex: 3,
@@ -231,12 +289,24 @@ const styles = StyleSheet.create({
   },
   touch_btn: {
     backgroundColor: 'gray',
-    width: 170,
+    width: Dimensions.get('window').width / 2,
     height: 50,
     borderRadius: 15,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    margin: 3
   },
+  touch_btn_dif: {
+    width: Dimensions.get('window').width / 2.5,
+    height: Dimensions.get('window').width / 2.5,
+    margin: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dif_back: {
+    width: Dimensions.get('window').width / 2.5,
+    height: Dimensions.get('window').width / 2.5,
+  }
 });
 
 export default home_screen;

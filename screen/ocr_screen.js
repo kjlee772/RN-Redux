@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, ScrollView, Dimensions, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, Image, TextInput, ScrollView, Dimensions, TouchableOpacity, StyleSheet, Alert, Vibration } from 'react-native';
 import Modal from 'react-native-modal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -37,6 +37,7 @@ const ocr_screen = (props) => {
   }
 
   const _save = async (key, value) => {
+    Vibration.vibrate(50)
     const json_value = JSON.stringify(value);
     AsyncStorage.setItem(key, json_value)
       .then(() => {
@@ -57,6 +58,7 @@ const ocr_screen = (props) => {
   }
 
   const _open_modal = () => {
+    Vibration.vibrate(50)
     set_modal_visible(true);
   }
 

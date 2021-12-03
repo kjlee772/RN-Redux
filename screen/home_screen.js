@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions, Vibration } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -48,6 +48,7 @@ const home_screen = ({ navigation }) => {
     includeBase64: true,
   }
   const _choose_image = () => {
+    Vibration.vibrate(50)
     console.log('choose image called');
     launchImageLibrary(image_option, (response) => {
       if (response.didCancel) {
@@ -65,6 +66,7 @@ const home_screen = ({ navigation }) => {
     });
   }
   const _launch_camera = () => {
+    Vibration.vibrate(50)
     console.log('launch camera called');
     launchCamera(image_option, (response) => {
       if (response.didCancel) {
@@ -98,13 +100,14 @@ const home_screen = ({ navigation }) => {
   }
 
   const _edit_alert = () => {
+    Vibration.vibrate(50);
     Alert.alert(
       '사진을 편집하겠습니까?',
       '',
       [
         {
           text: '예',
-          onPress: () => _edit_image(),
+          onPress: () =>{_edit_image()},
         },
         {
           text: '아니오',
@@ -132,9 +135,11 @@ const home_screen = ({ navigation }) => {
 
   const _ocr = () => {
     if (store_file_base64) {
+      Vibration.vibrate(50)
       navigation.navigate('Ocr', { from: from });
     }
     // if (store_file_base64) {
+    //   Vibration.vibrate(50)
     //   console.log('ocr called');
     //   set_loading_flag(true);
     //   fetch('http://221.158.52.168:3001/new_ocr', {
@@ -187,6 +192,7 @@ const home_screen = ({ navigation }) => {
   }
 
   const _open_modal = () => {
+    Vibration.vibrate(50)
     set_menu_visible(false);
     set_modal_visible(true);
   }
@@ -210,7 +216,7 @@ const home_screen = ({ navigation }) => {
             <TouchableOpacity style={styles.touch_btn} onPress={() => _ocr()}>
               <Text style={styles.text_btn}>텍스트 추출하기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.touch_btn} onPress={() => navigation.navigate('Storage')}>
+            <TouchableOpacity style={styles.touch_btn} onPress={() => {Vibration.vibrate(50), navigation.navigate('Storage')}}>
               <Text style={styles.text_btn}>저장소</Text>
             </TouchableOpacity>
           </>

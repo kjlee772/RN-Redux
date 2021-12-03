@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions, Alert, Vibration } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -45,12 +45,12 @@ const storage_screen = ({ navigation }) => {
   }
 
   const _move = (value) => {
+    Vibration.vibrate(50)
     dispatch(actions.chn_file_name(value.file_name))
     dispatch(actions.chn_file_uri(value.file_uri));
     dispatch(actions.chn_ocr_result(value.ocr_result));
     dispatch(actions.chk_subject(value.subject));
     dispatch(actions.chk_summary(value.summary));
-    console.log(value.summary);
     navigation.navigate('Ocr', { from: from })
   }
 

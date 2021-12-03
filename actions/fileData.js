@@ -1,8 +1,7 @@
 export const CHN_FILE_URI = 'fileData/CHN_FILE_URI';
 export const CHN_FILE_NAME = 'fileData/CHN_FILE_NAME';
+export const CHN_FILE_BASE64 = 'fileData/CHN_FILE_BASE64'
 export const CHN_OCR_RESULT = 'fileData/CHN_OCR_RESULT';
-export const CHK_KEY = 'fileData/CHK_KEY';
-export const CHK_ALL_KEY = 'fileData/CHK_ALL_KEY';
 export const CHK_SUBJECT = 'fileData/CHK_SUBJECT';
 export const CHK_SUMMARY = 'fileData/CHK_SUMMARY';
 
@@ -29,24 +28,17 @@ export const chn_file_name = (name) => {
   }
 };
 
+export const chn_file_base64 = (base64) => {
+  return {
+    type: CHN_FILE_BASE64,
+    payload: base64,
+  }
+};
+
 export const chn_ocr_result = (result) => {
   return {
     type: CHN_OCR_RESULT,
     payload: result,
-  }
-};
-
-export const chk_key = (key) => {
-  return {
-    type: CHK_KEY,
-    payload: key,
-  }
-};
-
-export const chk_all_key = (keys) => {
-  return {
-    type: CHK_ALL_KEY,
-    payload: keys,
   }
 };
 

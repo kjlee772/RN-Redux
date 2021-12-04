@@ -11,6 +11,9 @@ const ocr_screen = (props) => {
     if(from === 'home'){
       set_summary('');
     }
+    return () => {
+      Vibration.vibrate(50)
+    }
   }, [])
 
   const dispatch = useDispatch();
@@ -27,6 +30,7 @@ const ocr_screen = (props) => {
   const [ocr_result, set_ocr_result] = useState(store_ocr_result);
   const [subject, set_subject] = useState(store_subject);
   const [summary, set_summary] = useState(store_summary);
+  const [did_summary, set_did_summary] = useState(false);
 
   const data_object = {
     file_uri: store_file_uri,
@@ -59,6 +63,7 @@ const ocr_screen = (props) => {
 
   const _open_modal = () => {
     Vibration.vibrate(50)
+    set_did_summary(true);
     set_modal_visible(true);
   }
 
@@ -98,7 +103,7 @@ const ocr_screen = (props) => {
           onBackButtonPress={() => set_modal_visible(false)} onBackdropPress={() => set_modal_visible(false)}>
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <TextInput style={styles.text_summary}
-              value={from === 'home' ? null : summary}
+              value={from === 'home' ? did_summary ? summary : null : summary}
               placeholderTextColor={'black'} multiline={true}
               onChangeText={set_summary}
             />

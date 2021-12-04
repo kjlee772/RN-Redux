@@ -49,7 +49,6 @@ const home_screen = ({ navigation }) => {
   }
   const _choose_image = () => {
     Vibration.vibrate(50)
-    console.log('choose image called');
     launchImageLibrary(image_option, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -67,7 +66,6 @@ const home_screen = ({ navigation }) => {
   }
   const _launch_camera = () => {
     Vibration.vibrate(50)
-    console.log('launch camera called');
     launchCamera(image_option, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -85,7 +83,6 @@ const home_screen = ({ navigation }) => {
   }
 
   const _edit_image = () => {
-    console.log('edit image called');
     ImagePicker.openCropper({
       path: store_file_uri,
       width: Dimensions.get('window').width,
@@ -140,7 +137,6 @@ const home_screen = ({ navigation }) => {
     }
     // if (store_file_base64) {
     //   Vibration.vibrate(50)
-    //   console.log('ocr called');
     //   set_loading_flag(true);
     //   fetch('http://221.158.52.168:3001/new_ocr', {
     //     method: 'POST',

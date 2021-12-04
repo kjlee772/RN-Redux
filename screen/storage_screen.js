@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions, Alert, Vibration } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,6 +7,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as actions from '../actions/fileData';
 
 const storage_screen = ({ navigation }) => {
+  useEffect(() => {
+    return () => {
+      Vibration.vibrate(50)
+    }
+  }, [])
   const dispatch = useDispatch();
 
   const from = 'storage';
@@ -14,6 +19,7 @@ const storage_screen = ({ navigation }) => {
   const { list_data: store_list_data } = useSelector((state) => state.fileData);
 
   const _delete_alert = (key) => {
+    Vibration.vibrate(50)
     Alert.alert(
       '해당 데이터를 삭제하시겠습니까?',
       '',

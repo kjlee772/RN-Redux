@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions, Vibration } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Alert, Dimensions, Vibration, BackHandler } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +23,21 @@ const home_screen = ({ navigation }) => {
           .catch(err => { throw err })
       )
       .catch(err => { throw err })
+    const backAction = () => {
+      Alert.alert('앱을 종료하시겠습니까?', '', [
+        {
+          text: '확인',
+          onPress: () => BackHandler.exitApp()
+        },
+        { text: '취소', }
+      ]);
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return () => backHandler.remove();
   }, [])
 
   const dispatch = useDispatch();

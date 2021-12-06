@@ -46,15 +46,8 @@ const home_screen = ({ navigation }) => {
   const [menu_visible, set_menu_visible] = useState(true);
   const [modal_visible, set_modal_visible] = useState(false);
 
-  // const [file_uri, set_file_uri] = useState();
-  // const [file_base64, set_file_base64] = useState();
-  // const [file_name, set_file_name] = useState();
-  // const [ocr_result, set_ocr_result] = useState();
-
   const { file_uri: store_file_uri } = useSelector((state) => state.fileData);
   const { file_base64: store_file_base64 } = useSelector((state) => state.fileData);
-  // const { file_name: store_file_name } = useSelector((state) => state.fileData);
-  // const { ocr_result: store_ocr_result } = useSelector((state) => state.fileData);
 
   const [loading_flag, set_loading_flag] = useState(false);
 

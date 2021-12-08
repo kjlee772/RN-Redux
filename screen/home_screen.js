@@ -139,60 +139,60 @@ const home_screen = ({ navigation }) => {
   }
 
   const _ocr = () => {
-    if (store_file_base64) {
-      Vibration.vibrate(50)
-      navigation.navigate('Ocr', { from: from });
-    }
     // if (store_file_base64) {
     //   Vibration.vibrate(50)
-    //   set_loading_flag(true);
-    //   fetch('http://221.158.52.168:3001/new_ocr', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-type': 'application/json',
-    //       'Accept': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       file_base64: store_file_base64,
-    //     })
-    //   })
-    //     .then(res => res.json())
-    //     .then(res => {
-    //       let processed_res = res.Res.replace(/\n/g, '');
-    //       let split_res = processed_res.split('.');
-    //       let del_space = []
-    //       split_res.forEach(element => {
-    //         let temp = element.replace(/^\s+|\s+$/g, '');
-    //         temp = temp.concat('.')
-    //         del_space.push(temp);
-    //       });
-    //       let final_res = del_space.join('\n');
-    //       dispatch(actions.chn_ocr_result(final_res));
-    //       set_loading_flag(false);
-    //     })
-    //     .then(() => {
-    //       navigation.navigate('Ocr', { from: from });
-    //     })
-    //     .catch(err => {
-    //       console.log('Ocr problem: ' + err.message, err.code);
-    //       set_loading_flag(false);
-    //       return Alert.alert(
-    //         '다시 시도해주세요',
-    //         '',
-    //         [
-    //           {
-    //             text: '예'
-    //           }
-    //         ]
-    //       )
-    //     })
+    //   navigation.navigate('Ocr', { from: from });
     // }
-    // else {
-    //   return Alert.alert(
-    //     '사진을 선택해주세요', '',
-    //     [{ text: 'OK' }],
-    //   )
-    // }
+    Vibration.vibrate(50)
+    if (store_file_base64) {
+      set_loading_flag(true);
+      fetch('http://221.158.52.168:3001/new_ocr', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          file_base64: store_file_base64,
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          let processed_res = res.Res.replace(/\n/g, '');
+          let split_res = processed_res.split('.');
+          let del_space = []
+          split_res.forEach(element => {
+            let temp = element.replace(/^\s+|\s+$/g, '');
+            temp = temp.concat('.')
+            del_space.push(temp);
+          });
+          let final_res = del_space.join('\n');
+          dispatch(actions.chn_ocr_result(final_res));
+          set_loading_flag(false);
+        })
+        .then(() => {
+          navigation.navigate('Ocr', { from: from });
+        })
+        .catch(err => {
+          console.log('Ocr problem: ' + err.message, err.code);
+          set_loading_flag(false);
+          return Alert.alert(
+            '다시 시도해주세요',
+            '',
+            [
+              {
+                text: '예'
+              }
+            ]
+          )
+        })
+    }
+    else {
+      return Alert.alert(
+        '사진을 선택해주세요', '',
+        [{ text: 'OK' }],
+      )
+    }
   }
 
   const _open_modal = () => {

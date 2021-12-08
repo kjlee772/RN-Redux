@@ -60,11 +60,49 @@ const ocr_screen = (props) => {
       })
       .catch(err => { throw err; })
   }
+  
+  const my_summaryCount = parseInt(ocr_result.split('\n').length/2)
+  const my_header = {
+    'X-NCP-APIGW-API-KEY-ID': '',
+    'X-NCP-APIGW-API-KEY': '',
+    'Content-Type': 'application/json'
+  }
+  const my_body = JSON.stringify({
+    'document': {
+      'content': ocr_result,
+      'title': subject,
+    },
+    'option': {
+      'language': 'ko',
+      'model': 'general',
+      'tone': 2,
+      'summaryCount': my_summaryCount
+    }
+  })
+
+  const _summary = () => {
+    if(!did_summary){
+      fetch('https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize', {
+        method: 'POST',
+        headers: my_header,
+        body: my_body
+      })
+      .then(res => res.json())
+      .then(data => {
+        set_summary(data.summary)
+        set_did_summary(true)
+        set_modal_visible(true)
+      })
+      .catch(err => {throw err;})
+    }
+    else{
+      set_modal_visible(true);
+    }
+  }
 
   const _open_modal = () => {
     Vibration.vibrate(50)
-    set_did_summary(true);
-    set_modal_visible(true);
+    _summary()
   }
 
   return (

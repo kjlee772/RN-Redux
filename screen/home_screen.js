@@ -24,6 +24,7 @@ const home_screen = ({ navigation }) => {
       )
       .catch(err => { throw err })
     const backAction = () => {
+      Vibration.vibrate(50)
       Alert.alert('앱을 종료하시겠습니까?', '', [
         {
           text: '확인',

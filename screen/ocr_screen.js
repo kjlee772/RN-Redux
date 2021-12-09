@@ -61,7 +61,7 @@ const ocr_screen = (props) => {
       .catch(err => { throw err; })
   }
   
-  const my_summaryCount = parseInt(ocr_result.split('\n').length/2)
+  const my_summaryCount = parseInt(ocr_result.split('\n').length/3)
   const my_header = {
     'X-NCP-APIGW-API-KEY-ID': '',
     'X-NCP-APIGW-API-KEY': '',
@@ -81,22 +81,27 @@ const ocr_screen = (props) => {
   })
 
   const _summary = () => {
-    if(!did_summary){
-      fetch('https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize', {
-        method: 'POST',
-        headers: my_header,
-        body: my_body
-      })
-      .then(res => res.json())
-      .then(data => {
-        set_summary(data.summary)
-        set_did_summary(true)
-        set_modal_visible(true)
-      })
-      .catch(err => {throw err;})
+    if(from == 'storage'){
+      set_modal_visible(true);
     }
     else{
-      set_modal_visible(true);
+      if(!did_summary){
+        fetch('https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize', {
+          method: 'POST',
+          headers: my_header,
+          body: my_body
+        })
+        .then(res => res.json())
+        .then(data => {
+          set_summary(data.summary)
+          set_did_summary(true)
+          set_modal_visible(true)
+        })
+        .catch(err => {throw err;})
+      }
+      else{
+        set_modal_visible(true);
+      }
     }
   }
 

@@ -147,7 +147,7 @@ const home_screen = ({ navigation }) => {
     Vibration.vibrate(50)
     if (store_file_base64) {
       set_loading_flag(true);
-      fetch('http://221.158.52.168:3001/new_ocr', {
+      fetch('http://localhost:3001/new_ocr', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
